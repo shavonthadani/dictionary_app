@@ -1,18 +1,12 @@
 from tkinter import *
 from PIL import Image, ImageTk
-
 import dictionaryBackend
-import time
-import os
 from gifObject import ImageLabel
 import threading
 
 
-
 def loadDef():
-    lbl_def['text'] = dictionaryBackend.translate(input.get())
-    time.sleep(3)
-    lbl_word['text'] = input.get()
+    lbl_word['text'], lbl_def['text'] = dictionaryBackend.translate(input.get())
     lbl_def_image.lift()
     lbl_word.lift()
     lbl_def.lift()
@@ -23,6 +17,7 @@ def loadDef():
 
 
 def searchDef(event):
+    if '\'' not in input.get() and '"' not in input.get():
         global gif
         gif = ImageLabel(window)
         gif.load('page_flip.gif')
@@ -36,6 +31,7 @@ def createGUI():
     global window
     window =Tk()
     window.wm_title("Dictionary")
+
     window.bind('<Return>',searchDef)
 
     def_pic = ImageTk.PhotoImage(Image.open("page.png"))
@@ -70,7 +66,7 @@ def createGUI():
     txt_input = Entry(textvariable=input)
     txt_input.place(x=350,y=50)
 
-    #output
+    #output variables
     global lbl_word
     lbl_word = Label(font="helvetica 20", wraplength=175, justify="left")
     lbl_word.place(x=220,y=200)
