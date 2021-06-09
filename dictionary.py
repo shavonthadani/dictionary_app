@@ -3,6 +3,7 @@ from PIL import Image, ImageTk
 import dictionaryBackend
 from gifObject import ImageLabel
 import threading
+import re
 
 
 def loadDef():
@@ -17,7 +18,7 @@ def loadDef():
 
 
 def searchDef(event):
-    if '\'' not in input.get() and '"' not in input.get():
+    if re.search(r"^[a-zA-Z ]+$",input.get()) != None:
         global gif
         gif = ImageLabel(window)
         gif.load('page_flip.gif')
