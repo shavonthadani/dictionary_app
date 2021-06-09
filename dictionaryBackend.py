@@ -47,7 +47,7 @@ def translate(w):
     else:
         return("No word found!")
 
-word = input("enter word: ")
+#word = input("enter word: ")
 
-output = translate(word)
-print(output)
+#output = translate(word)
+#print(output)
