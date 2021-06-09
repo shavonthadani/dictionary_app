@@ -18,9 +18,11 @@ def translate(w):
 
     #print results
     if results:
+        number = 0
         definition = ""
         for result in results:
-            definition += result[0] + "\n"
+            number = number + 1
+            definition += str(number) + ". " + result[0] + "\n"
         return definition
 
     #Gets words to look for similarities might have error
