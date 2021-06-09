@@ -8,6 +8,8 @@ import re
 
 def loadDef():
     lbl_word['text'], lbl_def['text'] = dictionaryBackend.translate(input.get())
+    dictionaryBackend.closeConn()
+    dictionaryBackend.closeConn()
     lbl_def_image.lift()
     lbl_word.lift()
     lbl_def.lift()
@@ -19,12 +21,10 @@ def loadDef():
 
 def searchDef(event):
     if re.search(r"^[a-zA-Z ]+$",input.get()) != None:
-        global gif
-        gif = ImageLabel(window)
-        gif.load('page_flip.gif')
         load_def_thread = threading.Thread(target=loadDef)
         load_def_thread.start()
-        gif.grid(row=0,column=0)
+        gif.lift()
+
 
 
 
@@ -33,7 +33,12 @@ def createGUI():
     window =Tk()
     window.wm_title("Dictionary")
 
-    window.bind('<Return>',searchDef)
+    global gif
+    gif = ImageLabel(window)
+    gif.load('page_flip.gif')
+    gif.grid(row=0,column=0)
+
+
 
     def_pic = ImageTk.PhotoImage(Image.open("page.png"))
     global lbl_def_image
@@ -77,6 +82,6 @@ def createGUI():
     lbl_def = Label(font="helvetica 10", wraplength=175, justify="left")
     lbl_def.place(x=420,y=200)
     lbl_def.lower()
-
+    window.bind('<Return>',searchDef)
     window.mainloop()
 createGUI()

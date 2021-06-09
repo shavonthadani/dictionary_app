@@ -1,7 +1,13 @@
 import mysql.connector
 from difflib import get_close_matches
+
+def closeConn():
+    cursor.close()
+    con.close()
 def translate(w):
     #create connection
+    global con
+    global cursor
     con = mysql.connector.connect(
     user = "ardit700_student",
     password = "ardit700_student",
