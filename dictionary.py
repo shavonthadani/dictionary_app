@@ -87,7 +87,7 @@ def createGUI():
     lbl_word.lower()
 
     global txt_def
-    txt_def = readonlyText.ROText(font="helvetica 10", height=20, width=30, wrap= WORD, borderwidth=0)
+    txt_def = readonlyText.ROText(font="helvetica 15", height=14, width=20, wrap= WORD, borderwidth=0)
     txt_def.bind("<Key>", lambda e: "break")
     txt_def.place(x=420,y=200)
     global scrollbar
