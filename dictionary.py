@@ -1,103 +1,94 @@
-from tkinter import *
-from PIL import Image, ImageTk
-import dictionaryBackend
-from gifObject import ImageLabel
-import threading
+from tkinter import * #might not need
+from model import Model
 import re
+import threading
+from PIL import Image, ImageTk
+from gifObject import ImageLabel
 import readonlyText
+#from controller import Controller
+class View(Tk):
 
+    def __init__(self, controller):
+        self.controller = controller
+        super().__init__()
+        self.bind('<Return>',self.controller.on_return_key)
+        self.wm_title("Dictionary")
+        self.input = StringVar()
 
-def loadDef():
-    dic_word = dictionaryBackend.translate(input.get())
-    lbl_word['text'] = dic_word[0]
-    try:
-        txt_def.delete("1.0","end")
-    except:
-        pass
-    txt_def.insert(END,dic_word[1])
-    dictionaryBackend.closeConn()
-    dictionaryBackend.closeConn()
-    lbl_def_image.lift()
-    lbl_word.lift()
-    txt_def.lift()
-    scrollbar.lift()
-    lbl_prompt.lift()
-    ent_input.delete(0,END)
-    ent_input.lift()
+    def _create_gif(self):
+        self.gif = ImageLabel(self)
+        self.gif.load('page_flip.gif')
+        self.gif.grid(row=0,column=0)
+    def _create_def_pic(self):
+        #page.png is the second image
+        #start.png is the first image
+        def_pic = ImageTk.PhotoImage(Image.open("page.png"))
+        self.lbl_def_image = Label(self, image=def_pic)
+        self.lbl_def_image.image = def_pic
+        self.lbl_def_image.grid(row=0,column=0)
+    def _create_start_pic(self):
+        start_pic = ImageTk.PhotoImage(Image.open("start_pic.png"))
+        self.lbl_start_image = Label(self, image=start_pic)
+        self.lbl_start_image.image = start_pic
+        self.lbl_start_image.grid(row=0,column=0)
+    def _create_prompt_label(self):
+        self.lbl_prompt = Label(self, text = "Enter a word:",bg = "#90D395")
+        self.lbl_prompt.place(x=250,y=53)
+    def _create_entry(self):
+        self.ent_input = Entry(self, textvariable=self.input)
+        self.ent_input.place(x=350,y=50)
+    def _create_word_label(self):
+        self.lbl_word = Label(self, font="helvetica 20", wraplength=175, justify="left")
+        self.lbl_word.place(x=220,y=200)
+        self.lbl_word.lower()
+    def _create_txt_with_scroll(self):
+        self.txt_def = readonlyText.ROText(self, font="helvetica 10", height=20, width=30, wrap= WORD, borderwidth=0)
+        self.txt_def.bind("<Key>", lambda e: "break")
+        self.txt_def.place(x=420,y=200)
+        self.scrollbar = Scrollbar(self)
+        self.scrollbar.place(x=600,y=200)
+        self.txt_def.config(yscrollcommand=self.scrollbar.set)
+        self.scrollbar.config(command=self.txt_def.yview)
+        self.scrollbar.lower()
+        self.txt_def.lower()
+    def main(self):
+        self._create_gif()
+        self._create_def_pic()
+        self._create_start_pic()
+        self._create_prompt_label()
+        self._create_entry()
+        self._create_word_label()
+        self._create_txt_with_scroll()
+        self.mainloop()
 
+class Controller:
 
+    def __init__(self):
+        self.model = Model()
+        self.view = View(self)
 
-def searchDef(event):
-    if re.search(r"^[a-zA-Z ]+$",input.get()) != None:
-        load_def_thread = threading.Thread(target=loadDef)
-        load_def_thread.start()
-        gif.lift()
-
-
-
-
-def createGUI():
-    global window
-    window =Tk()
-    window.wm_title("Dictionary")
-
-    global gif
-    gif = ImageLabel(window)
-    gif.load('page_flip.gif')
-    gif.grid(row=0,column=0)
-
-
-
-    def_pic = ImageTk.PhotoImage(Image.open("page.png"))
-    global lbl_def_image
-    lbl_def_image = Label(image=def_pic)
-    lbl_def_image.image = def_pic
-    lbl_def_image.grid(row=0,column=0)
-
-
-
-    start_pic = ImageTk.PhotoImage(Image.open("start_pic.png"))
-    global lbl_image
-    lbl_image = Label(image=start_pic)
-    lbl_image.image = start_pic
-    lbl_image.grid(row=0,column=0)
-    start_pic = ImageTk.PhotoImage(Image.open("start_pic.png"))
-    lbl_image = Label(image=start_pic)
-    lbl_image.image = start_pic
-    lbl_image.grid(row=0,column=0)
-
-    global input
-    input = StringVar()
-    global lbl_prompt
-    lbl_prompt = Label(text = "Enter a word:",bg = "#90D395")
-    lbl_prompt.place(x=250,y=53)
-    global ent_input
-    ent_input = Entry(textvariable=input)
-    ent_input.place(x=350,y=50)
-    input = StringVar()
-    lbl_prompt = Label(text = "Enter a word:",bg = "#90D395")
-    lbl_prompt.place(x=250,y=53)
-    ent_input = Entry(textvariable=input)
-    ent_input.place(x=350,y=50)
-
-    #output variables
-    global lbl_word
-    lbl_word = Label(font="helvetica 20", wraplength=175, justify="left")
-    lbl_word.place(x=220,y=200)
-    lbl_word.lower()
-
-    global txt_def
-    txt_def = readonlyText.ROText(font="helvetica 10", height=20, width=30, wrap= WORD, borderwidth=0)
-    txt_def.bind("<Key>", lambda e: "break")
-    txt_def.place(x=420,y=200)
-    global scrollbar
-    scrollbar = Scrollbar(window)
-    scrollbar.place(x=600,y=200)
-    txt_def.config(yscrollcommand=scrollbar.set)
-    scrollbar.config(command=txt_def.yview)
-    scrollbar.lower()
-    txt_def.lower()
-
-    window.bind('<Return>',searchDef)
-    window.mainloop()
-createGUI()
+    def main(self):
+        self.view.main()
+    def loadDef(self):
+        dic_word = self.model.translate(self.view.input.get())
+        self.view.lbl_word['text'] = dic_word[0]
+        try:
+            self.view.txt_def.delete("1.0","end")
+        except:
+            pass
+        self.view.txt_def.insert(END,dic_word[1])
+        self.view.lbl_def_image.lift()
+        self.view.lbl_word.lift()
+        self.view.txt_def.lift()
+        self.view.scrollbar.lift()
+        self.view.lbl_prompt.lift()
+        self.view.ent_input.delete(0,END)
+        self.view.ent_input.lift()
+    def on_return_key(self, event):
+        if re.search(r"^[a-zA-Z ]+$",self.view.input.get()) != None:
+            load_def_thread = threading.Thread(target=self.loadDef)
+            load_def_thread.start()
+            self.view.gif.lift()
+if __name__ == '__main__':
+    dictionary = Controller()
+    dictionary.main()
